@@ -16,15 +16,33 @@ public class PlayerScript : MonoBehaviour {
 
     public Image lifebar;           //
 
-	// Use this for initialization
-	void Start () {
+    public Transform missile;
+    public float missileDistance = .2f;
+    public float timeBetweenFires = .3f;
+    private float timeTilNextFire = 0.0f;
+    public List<KeyCode> shootButton;
+
+    // Use this for initialization
+    void Start () {
 		
 	}
 	
 	// Update is called once per frame
 	void Update () {
         MovePlayer();
-	}
+
+        foreach(KeyCode element in shootButton)
+        {
+            if(Input.GetKey(element) && timeTilNextFire < 0)
+            {
+                timeTilNextFire = timeBetweenFires;
+                FireMissile();
+                break;
+            }
+        }
+
+        timeTilNextFire -= Time.deltaTime;
+    }
 
     public void MovePlayer()
     {
@@ -37,6 +55,22 @@ public class PlayerScript : MonoBehaviour {
         this.transform.Translate(input * speed * Time.deltaTime);
     }
 
+    public void FireMissile()
+    {
+        Vector3 missilePos = this.transform.position;
+        
+        Vector3 worldPos = Input.mousePosition;
+        worldPos = Camera.main.ScreenToWorldPoint(worldPos);
+
+        float dx = this.transform.position.x - worldPos.x;
+        float dy = this.transform.position.y - worldPos.y;
+
+        float angle = Mathf.Atan2(dy, dx) * Mathf.Rad2Deg;
+
+        Quaternion rot = Quaternion.Euler(new Vector3(0, 0, angle + 90));
+
+        Instantiate(missile, missilePos, rot);
+    }
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
