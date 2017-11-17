@@ -16,11 +16,19 @@ public class PlayerScript : MonoBehaviour {
 
     public Image lifebar;           //
 
+    [Header("Missile Object")]
     public Transform missile;
     public float missileDistance = .2f;
     public float timeBetweenFires = .3f;
     private float timeTilNextFire = 0.0f;
     public List<KeyCode> shootButton;
+
+    [Header("Bomb Object")]
+    public Transform bomb;
+    public float bombDistance = .2f;
+    public float timeBetweenDoubleClick = 1f;
+    private float timeClick = 0.0f;
+    public List<KeyCode> bombButton;
 
     // Use this for initialization
     void Start () {
@@ -31,17 +39,29 @@ public class PlayerScript : MonoBehaviour {
 	void Update () {
         MovePlayer();
 
-        foreach(KeyCode element in shootButton)
+        foreach (KeyCode element in shootButton)
         {
-            if(Input.GetKey(element) && timeTilNextFire < 0)
+            if (Input.GetKeyDown(element))
+            {
+                if (timeClick < 0)
+                {
+                    timeClick = timeBetweenDoubleClick;
+                }
+                else
+                {
+                    FireBomb();
+                }
+            }
+
+            if (Input.GetKey(element) && timeTilNextFire < 0)
             {
                 timeTilNextFire = timeBetweenFires;
                 FireMissile();
                 break;
             }
         }
-
         timeTilNextFire -= Time.deltaTime;
+        timeClick -= Time.deltaTime;
     }
 
     public void MovePlayer()
@@ -70,6 +90,18 @@ public class PlayerScript : MonoBehaviour {
         Quaternion rot = Quaternion.Euler(new Vector3(0, 0, angle + 90));
 
         Instantiate(missile, missilePos, rot);
+    }
+
+    public void FireBomb()
+    {
+        Vector3 worldPos = Input.mousePosition;
+        worldPos = Camera.main.ScreenToWorldPoint(worldPos);
+
+        Vector3 bombPos = new Vector3(worldPos.x, worldPos.y, this.transform.position.z);
+
+        Quaternion rot = Quaternion.Euler(Vector3.zero);
+
+        Instantiate(bomb, bombPos, rot);
     }
     public void TakeDamage(float amount)
     {

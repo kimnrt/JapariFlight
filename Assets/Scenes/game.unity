@@ -455,6 +455,10 @@ MonoBehaviour:
   missileDistance: 0.2
   timeBetweenFires: 0.05
   shootButton: 43010000
+  bomb: {fileID: 4112460722941354, guid: 98a393ecde4095f439ae95257438ee1d, type: 2}
+  bombDistance: 0.2
+  timeBetweenDoubleClick: 0.5
+  bombButton: 20000000
 --- !u!1 &1200411511
 GameObject:
   m_ObjectHideFlags: 0
